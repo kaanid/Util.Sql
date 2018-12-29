@@ -1,5 +1,9 @@
 ## 生成sql
 
+sql builder,Sql generator. 
+sql生成类库开发，支持(net45,net46,net47,dotnet),支持数据库（sqlsrver,mysql,postgresql)
+
+## 使用
 ```
 
 var builder = new SqlServerBuilder();
