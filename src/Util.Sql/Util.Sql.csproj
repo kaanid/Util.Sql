@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Datas\Queries\Criterias\**" />
+    <Compile Remove="Datas\Queries\Internal\**" />
+    <EmbeddedResource Remove="Datas\Queries\Criterias\**" />
+    <EmbeddedResource Remove="Datas\Queries\Internal\**" />
+    <None Remove="Datas\Queries\Criterias\**" />
+    <None Remove="Datas\Queries\Internal\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Datas\Queries\IQuery.cs" />
+    <Compile Remove="Datas\Queries\OrderByBuilder.cs" />
+    <Compile Remove="Datas\Queries\OrderByItem.cs" />
+    <Compile Remove="Datas\Queries\Query.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+  </ItemGroup>
+
+</Project>
