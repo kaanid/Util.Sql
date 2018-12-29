@@ -16,7 +16,7 @@ string sqlStr=_builder.ToSql();
 
 ```
 
-## 项止源自于Util
+## 项目源自于Util
 
 https://github.com/dotnetcore/Util
 
