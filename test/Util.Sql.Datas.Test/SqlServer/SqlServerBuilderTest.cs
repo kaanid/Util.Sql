@@ -1180,5 +1180,143 @@ namespace Util.Sql.DatasTest.SqlServer
             Assert.Equal("a", _builder.GetParams()["@_p_0"]);
             Assert.Equal(1, _builder.GetParams()["@_p_1"]);
         }
+
+        [Fact]
+        public void Test_Delete_1()
+        {
+            //结果
+            var result = new StringBuilder();
+            result.AppendLine("Delete from [Sample] ");
+            result.Append("Where [Sample].[Email]=@_p_0");
+
+            var builder = _builder.New();
+            builder
+                .Delete<Sample>()
+                .Where<Sample>(t => t.Email == "");
+            var sql = builder.ToSql();
+            //验证
+            Assert.Equal(result.ToString(), sql);
+
+            string sqldebug = builder.ToDebugSql();
+            Assert.Equal(1, builder.GetParams().Count);
+        }
+
+        [Fact]
+        public void Test_Delete_2()
+        {
+            //结果
+            var result = new StringBuilder();
+            result.AppendLine("Delete from [Sample] ");
+            result.Append("Where [Email]=@_p_0");
+
+            var builder = _builder.New();
+            builder
+                .Delete("Sample")
+                .Where<Sample>(t => t.Email == "");
+            var sql = builder.ToSql();
+            //验证
+            Assert.Equal(result.ToString(), sql);
+
+            string sqldebug = builder.ToDebugSql();
+            Assert.Equal(1, builder.GetParams().Count);
+        }
+
+        [Fact]
+        public void Test_Update_1()
+        {
+            //结果
+            var result = new StringBuilder();
+            result.AppendLine("Update [Sample] ");
+            result.AppendLine("Set [Email]=@_p_0 ");
+            result.Append("Where [Sample].[Email]=@_p_1");
+
+            var dict = new Dictionary<string, object> {
+                {  "Email","12312312" }
+            };
+
+            var builder = _builder.New();
+            builder
+                .Update<Sample>()
+                .Set(dict)
+                .Where<Sample>(t => t.Email == "");
+            var sql = builder.ToSql();
+            //验证
+            Assert.Equal(result.ToString(), sql);
+
+            string sqldebug = builder.ToDebugSql();
+            Assert.Equal(2, builder.GetParams().Count);
+        }
+
+        [Fact]
+        public void Test_Update_2()
+        {
+            //结果
+            var result = new StringBuilder();
+            result.AppendLine("Update [Sample] ");
+            result.AppendLine("Set [Email]=@_p_0 ");
+            result.Append("Where [Sample].[Email]=@_p_1");
+
+            var builder = _builder.New();
+            builder
+                .Update<Sample>()
+                .Set<Sample>(t=>new object[] {t.Email },new Sample { Email="aaaa@qq.com"})
+                .Where<Sample>(t => t.Email == "");
+            var sql = builder.ToSql();
+
+            //验证
+            Assert.Equal(result.ToString(), sql);
+
+            string sqldebug = builder.ToDebugSql();
+            Assert.Equal(2, builder.GetParams().Count);
+        }
+
+        [Fact]
+        public void Test_Update_3()
+        {
+            //结果
+            var result = new StringBuilder();
+            result.AppendLine("Update [Sample] ");
+            result.AppendLine("Set [Email]=@_p_0 ");
+            result.Append("Where [Sample].[Email]=@_p_1");
+
+            var dict = new Dictionary<string, object> {
+                {  "Email","12312312" }
+            };
+
+            var builder = _builder.New();
+            builder
+                .Update<Sample>()
+                .Set<Sample>(new Sample { Email = "aaaa@qq.com" })
+                .Where<Sample>(t => t.Email == "");
+            var sql = builder.ToSql();
+
+            //验证
+            Assert.NotEqual(result.ToString(), sql);
+
+            //string sqldebug = builder.ToDebugSql();
+            //Assert.Equal(2, builder.GetParams().Count);
+        }
+
+        [Fact]
+        public void Test_Insert_1()
+        {
+            //结果
+            var result = new StringBuilder();
+            result.AppendLine("Insert into [Sample] ");
+            result.AppendLine("([Email])");
+            result.Append("Values(@_p_0)");
+
+            var dict = new Dictionary<string, object> {
+                {  "Email","12312312" }
+            };
+
+            var builder = _builder.New();
+            builder
+                .Insert<Sample>()
+                .Values(dict);
+            var sql = builder.ToSql();
+            //验证
+            Assert.Equal(result.ToString(), sql);
+        }
     }
 }

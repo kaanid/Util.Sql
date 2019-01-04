@@ -1,4 +1,5 @@
-﻿using Util.Sql.Datas.Matedatas;
+﻿using Util.Sql.Datas.Enums;
+using Util.Sql.Datas.Matedatas;
 using Util.Sql.Datas.Queries;
 using Util.Sql.Datas.Sql.Queries.Builders.Abstractions;
 using Util.Sql.Datas.Sql.Queries.Builders.Clauses;
@@ -59,6 +60,11 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Core
         protected IParameterManager ParameterManager => _parameterManager ?? (_parameterManager = CreatepParameterManager());
 
         /// <summary>
+        /// SQL动作
+        /// </summary>
+        protected SqlActionType SqlActionType { private set; get; }
+
+        /// <summary>
         /// 创建参数管理器
         /// </summary>
         protected virtual IParameterManager CreatepParameterManager()
@@ -91,6 +97,8 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Core
             _pager = null;
             _skipCountParam = null;
             _pageSizeParam = null;
+
+            SqlActionType = SqlActionType.Query;
         }
 
         #endregion
@@ -152,9 +160,29 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Core
         /// </summary>
         public virtual string ToSql()
         {
+            StringBuilder result = null;
+            if (SqlActionType == SqlActionType.Delete)
+            {
+                result = new StringBuilder();
+                CreateDeleteSql(result);
+                return result.ToString().Trim();
+            }
+            else if(SqlActionType== SqlActionType.Update)
+            {
+                result = new StringBuilder();
+                CreateInsertSql(result);
+                return result.ToString().Trim();
+            }
+            else if(SqlActionType==SqlActionType.Insert)
+            {
+                result = new StringBuilder();
+                CreateInsertSql(result);
+                return result.ToString().Trim();
+            }
+
             Init();
             Validate();
-            var result = new StringBuilder();
+            result = new StringBuilder();
             CreateSql(result);
             return result.ToString().Trim();
         }
@@ -200,6 +228,28 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Core
             AppendSql(result, GetWhere());
             AppendSql(result, GetGroupBy());
             AppendSql(result, GetOrderBy());
+        }
+
+        /// <summary>
+        /// 创建不分页Sql
+        /// </summary>
+        protected virtual void CreateDeleteSql(StringBuilder result)
+        {
+            AppendSql(result, GetDelete());
+            AppendSql(result, GetWhere());
+        }
+
+        protected virtual void CreateUpdateSql(StringBuilder result)
+        {
+            AppendSql(result, GetUpdate());
+            AppendSql(result, GetSet());
+            AppendSql(result, GetWhere());
+        }
+
+        protected virtual void CreateInsertSql(StringBuilder result)
+        {
+            AppendSql(result, GetInsert());
+            AppendSql(result, GetValues());
         }
 
         /// <summary>
@@ -1358,6 +1408,7 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Core
 
         #endregion
 
+                
         #region Page(设置分页)
 
         /// <summary>
@@ -1415,6 +1466,189 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Core
             return this;
         }
 
+        #endregion
+
+        #region 设置删除
+        /// <summary>
+        /// Select子句
+        /// </summary>
+        private IDeleteClause _deleteClause;
+
+        /// <summary>
+        /// Select子句
+        /// </summary>
+        protected IDeleteClause DeleteClause => _deleteClause ?? (_deleteClause = CreateDeleteClause());
+
+        /// <summary>
+        /// 创建Select子句
+        /// </summary>
+        protected virtual IDeleteClause CreateDeleteClause()
+        {
+            return new DeleteClause(GetDialect(), EntityResolver, AliasRegister);
+        }
+
+        /// <summary>
+        /// 获取Select语句
+        /// </summary>
+        public virtual string GetDelete()
+        {
+            return DeleteClause.ToSql();
+        }
+
+        /// <summary>
+        /// 设置表名
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        public virtual ISqlBuilder Delete<TEntity>() where TEntity : class
+        {
+            SqlActionType = SqlActionType.Delete;
+            DeleteClause.Delete<TEntity>();
+            return this;
+        }
+
+        /// <summary>
+        /// 设置表名
+        /// </summary>
+        /// <param name="table">表名</param>
+        public virtual ISqlBuilder Delete(string table)
+        {
+            SqlActionType = SqlActionType.Delete;
+            DeleteClause.Delete(table);
+            return this;
+        }
+        #endregion
+        #region Update
+        /// <summary>
+        /// Select子句
+        /// </summary>
+        private IUpdateClause _updateClause;
+
+        /// <summary>
+        /// Select子句
+        /// </summary>
+        protected IUpdateClause UpdateClause => _updateClause ?? (_updateClause = CreateUpdateClause());
+
+        /// <summary>
+        /// 创建Select子句
+        /// </summary>
+        protected virtual IUpdateClause CreateUpdateClause()
+        {
+            return new UpdateClause(GetDialect(), EntityResolver, AliasRegister);
+        }
+        public string GetUpdate()
+        {
+            return UpdateClause.ToSql();
+        }
+
+        public ISqlBuilder Update(string table)
+        {
+            SqlActionType = SqlActionType.Update;
+            UpdateClause.Update(table);
+            return this;
+        }
+
+        public ISqlBuilder Update<TEntity>() where TEntity : class
+        {
+            SqlActionType = SqlActionType.Update;
+            UpdateClause.Update<TEntity>();
+            return this;
+        }
+        #endregion
+        #region Set
+        /// <summary>
+        /// Select子句
+        /// </summary>
+        private ISetClause _setClause;
+
+        /// <summary>
+        /// Select子句
+        /// </summary>
+        protected ISetClause SetClause => _setClause ?? (_setClause = CreateSetClause());
+
+        /// <summary>
+        /// 创建Select子句
+        /// </summary>
+        protected virtual ISetClause CreateSetClause()
+        {
+            return new SetClause(GetDialect(), EntityResolver, AliasRegister,ParameterManager);
+        }
+        public ISqlBuilder Set(Dictionary<string, object> columns)
+        {
+            SetClause.Set(columns);
+            return this;
+        }
+        public ISqlBuilder Set<TEntity>(TEntity model) where TEntity : class
+        {
+            SetClause.Set<TEntity>(model);
+            return this;
+        }
+        public ISqlBuilder Set<TEntity>(Expression<Func<TEntity, object[]>> columns, TEntity model) where TEntity:class
+        {
+            SetClause.Set<TEntity>(columns,model);
+            return this;
+        }
+        public string GetSet()
+        {
+            return SetClause.ToSql();
+        }
+        #endregion
+        #region Insert
+
+        private IInsertClause _insertClause;
+
+        protected IInsertClause InsertClause => _insertClause ?? (_insertClause = CreateInsertClause());
+
+        protected virtual IInsertClause CreateInsertClause()
+        {
+            return new InsertClause(GetDialect(), EntityResolver, AliasRegister);
+        }
+        public string GetInsert()
+        {
+            return InsertClause.ToSql();
+        }
+        public ISqlBuilder Insert(string table)
+        {
+            SqlActionType = SqlActionType.Insert;
+            InsertClause.Insert(table);
+            return this;
+        }
+
+        public ISqlBuilder Insert<TEntity>() where TEntity : class
+        {
+            SqlActionType = SqlActionType.Insert;
+            InsertClause.Insert<TEntity>();
+            return this;
+        }
+        #endregion
+
+        #region Values
+        private IValuesClause _valuesClause;
+
+        protected IValuesClause ValuesClause => _valuesClause ?? (_valuesClause = CreateValuesClause());
+
+        protected virtual IValuesClause CreateValuesClause()
+        {
+            return new ValuesClause(GetDialect(), EntityResolver, AliasRegister,ParameterManager);
+        }
+        public string GetValues()
+        {
+            return ValuesClause.ToSql();
+        }
+        public void Values(Dictionary<string, object> columns)
+        {
+            ValuesClause.Values(columns);
+        }
+
+        public void Values<TEntity>(TEntity model) where TEntity : class
+        {
+            ValuesClause.Values<TEntity>(model);
+        }
+
+        public void Values<TEntity>(Expression<Func<TEntity, object[]>> columns, TEntity model) where TEntity : class
+        {
+            ValuesClause.Values<TEntity>(columns,model);
+        }
         #endregion
     }
 }

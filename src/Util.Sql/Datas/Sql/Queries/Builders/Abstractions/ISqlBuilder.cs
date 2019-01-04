@@ -1,4 +1,5 @@
-﻿using Util.Sql.Datas.Queries;
+﻿using Util.Sql.Datas.Enums;
+using Util.Sql.Datas.Queries;
 using Util.Sql.Domains.Repositories;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,8 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Abstractions
     /// <summary>
     /// Sql生成器
     /// </summary>
-    public interface ISqlBuilder : ICondition {
+    public interface ISqlBuilder : ICondition
+    {
         /// <summary>
         /// 清空并初始化
         /// </summary>
@@ -63,6 +65,32 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Abstractions
         /// </summary>
         string GetOrderBy();
         /// <summary>
+        /// 获取删除语句
+        /// </summary>
+        /// <returns></returns>
+        string GetDelete();
+        /// <summary>
+        /// 获取更新语句
+        /// </summary>
+        /// <returns></returns>
+        string GetUpdate();
+        /// <summary>
+        /// 获取Set语句
+        /// </summary>
+        /// <returns></returns>
+        string GetSet();
+        /// <summary>
+        /// 获取新建语句
+        /// </summary>
+        /// <returns></returns>
+        string GetInsert();
+        /// <summary>
+        /// 获取Values语句
+        /// </summary>
+        /// <returns></returns>
+        string GetValues();
+
+        /// <summary>
         /// 设置列名
         /// </summary>
         /// <param name="columns">列名,范例：a.AppId As Id,a.Name</param>
@@ -92,6 +120,36 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Abstractions
         /// <param name="builder">Sql生成器</param>
         /// <param name="columnAlias">列别名</param>
         ISqlBuilder AppendSelect( ISqlBuilder builder, string columnAlias = null );
+
+        /// <summary>
+        /// 设置删除表名
+        /// </summary>
+        ISqlBuilder Delete(string table);
+
+        /// <summary>
+        /// 设置删除表名
+        /// </summary>
+        ISqlBuilder Delete<TEntity>() where TEntity:class;
+
+        ISqlBuilder Update(string table);
+
+        ISqlBuilder Update<TEntity>() where TEntity : class;
+
+        ISqlBuilder Set(Dictionary<string, object> columns);
+
+        ISqlBuilder Set<TEntity>(TEntity model) where TEntity : class;
+        ISqlBuilder Set<TEntity>(Expression<Func<TEntity, object[]>> columns, TEntity model) where TEntity : class;
+
+        ISqlBuilder Insert(string table);
+
+        ISqlBuilder Insert<TEntity>() where TEntity : class;
+
+        void Values(Dictionary<string, object> columns);
+
+        void Values<TEntity>(TEntity model) where TEntity : class;
+        void Values<TEntity>(Expression<Func<TEntity, object[]>> columns, TEntity model) where TEntity : class;
+
+
         /// <summary>
         /// 设置表名
         /// </summary>
