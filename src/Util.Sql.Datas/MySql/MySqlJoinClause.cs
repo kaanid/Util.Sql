@@ -6,15 +6,18 @@ namespace Util.Sql.Datas.MySql {
     /// <summary>
     /// MySql 表连接子句
     /// </summary>
-    public class MySqlJoinClause : JoinClause {
+    public class MySqlJoinClause : JoinClause
+    {
         /// <summary>
         /// 初始化MySql 表连接子句
         /// </summary>
+        /// <param name="sqlBuilder">Sql生成器</param>
         /// <param name="dialect">方言</param>
         /// <param name="resolver">实体解析器</param>
         /// <param name="register">实体注册器</param>
-        public MySqlJoinClause( IDialect dialect, IEntityResolver resolver, IEntityAliasRegister register )
-            : base( dialect, resolver, register ) {
+        public MySqlJoinClause(ISqlBuilder sqlBuilder, IDialect dialect, IEntityResolver resolver, IEntityAliasRegister register)
+            : base(sqlBuilder, dialect, resolver, register)
+        {
         }
 
         /// <summary>
@@ -24,8 +27,9 @@ namespace Util.Sql.Datas.MySql {
         /// <param name="table">表名</param>
         /// <param name="schema">架构名</param>
         /// <param name="alias">别名</param>
-        protected override JoinItem CreateJoinItem( string joinType, string table, string schema, string alias ) {
-            return new JoinItem( joinType, table, schema, alias, false, false );
+        protected override JoinItem CreateJoinItem(string joinType, string table, string schema, string alias)
+        {
+            return new JoinItem(joinType, table, schema, alias, false, false);
         }
     }
 }

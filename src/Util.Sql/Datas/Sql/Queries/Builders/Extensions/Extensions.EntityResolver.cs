@@ -15,7 +15,7 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Extensions
         /// </summary>
         /// <param name="resolver">实体解析器</param>
         /// <param name="entity">实体类型</param>
-        public static string GetTableAndSchema2(this IEntityResolver resolver, Type entity)
+        public static string GetTableAndSchema(this IEntityResolver resolver, Type entity)
         {
             if (resolver == null)
                 throw new ArgumentNullException(nameof(resolver));

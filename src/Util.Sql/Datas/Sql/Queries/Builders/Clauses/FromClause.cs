@@ -71,7 +71,7 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Clauses
         public void From<TEntity>(string alias = null, string schema = null) where TEntity : class
         {
             var entity = typeof(TEntity);
-            string table = _resolver.GetTableAndSchema2(entity);
+            string table = _resolver.GetTableAndSchema(entity);
             _item = CreateSqlItem(table, schema, alias);
             _register.Register(entity, _resolver.GetAlias(entity, alias));
         }

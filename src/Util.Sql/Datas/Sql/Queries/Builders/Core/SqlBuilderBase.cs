@@ -496,7 +496,7 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Core
         /// </summary>
         protected virtual IJoinClause CreateJoinClause()
         {
-            return new JoinClause(GetDialect(), EntityResolver, AliasRegister);
+            return new JoinClause(this, GetDialect(), EntityResolver, AliasRegister);
         }
 
         /// <summary>
