@@ -41,6 +41,10 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Abstractions
         /// </summary>
         IDictionary<string, object> GetParams();
         /// <summary>
+        /// 过滤重复记录
+        /// </summary>
+        ISqlBuilder Distinct();
+        /// <summary>
         /// 获取Select语句
         /// </summary>
         string GetSelect();

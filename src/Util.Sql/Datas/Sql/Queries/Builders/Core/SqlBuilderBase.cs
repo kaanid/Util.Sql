@@ -352,7 +352,7 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Core
         /// </summary>
         protected virtual ISelectClause CreateSelectClause()
         {
-            return new SelectClause(GetDialect(), EntityResolver, AliasRegister);
+            return new SelectClause(this,GetDialect(), EntityResolver, AliasRegister);
         }
 
         /// <summary>
@@ -361,6 +361,15 @@ namespace Util.Sql.Datas.Sql.Queries.Builders.Core
         public virtual string GetSelect()
         {
             return SelectClause.ToSql();
+        }
+
+        /// <summary>
+        /// 过滤重复记录
+        /// </summary>
+        public virtual ISqlBuilder Distinct()
+        {
+            SelectClause.Distinct();
+            return this;
         }
 
         /// <summary>
